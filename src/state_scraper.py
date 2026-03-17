@@ -33,10 +33,12 @@ first_page_containers = driver.find_elements(by="xpath", value="//ul[@id='states
 #/div/div[@class='col-sm-8 col-sm-pull-4 address-block']/p[@class='address-text'] firm's address
 #/div/div[@class='col-sm-8 col-sm-pull-4 address-block']/a firm's website
 
-for container in first_page_containers:
-    a_tag = container.find_element(by="xpath", value="./a")
-    state_list.append(container.find_element(by="xpath", value="./a").text)
-    state_list_links.append(container.find_element(by="xpath", value="./a").get_attribute("href"))
+for container in range(len(first_page_containers)):
+    first_page_containers = driver.find_elements(by="xpath", value="//ul[@id='states-list']/li")
+    containers = first_page_containers[container]
+    a_tag = first_page_containers[container].find_element(by="xpath", value="./a")
+    state_list.append(first_page_containers[container].find_element(by="xpath", value="./a").text)
+    state_list_links.append(first_page_containers[container].find_element(by="xpath", value="./a").get_attribute("href"))
     a_tag.click()
 
     second_page_containers = driver.find_elements(by="xpath", value="//div[@class='inner']")
@@ -61,8 +63,7 @@ for container in first_page_containers:
                 websites.append(None)
         driver.back()
     driver.back()
-
-WebDriverWait(driver, 10).until(EC.presence_of_all_elements_located((By.XPATH, "//ul[@id='states-list']/li")))
+    WebDriverWait(driver, 10).until(EC.presence_of_all_elements_located((By.XPATH, "//ul[@id='states-list']/li")))
 
 # Create a DataFrame with the extracted data
 df = pd.DataFrame({"State": state_list, "Link": state_list_links, "Firm": firms_by_state_list, "Firm_Link": firms_by_state_list_links, "Description": firms_descriptions, "Phone": phone_numbers, "Address": addresses, "Website": websites})
