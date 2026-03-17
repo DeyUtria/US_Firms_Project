@@ -33,6 +33,9 @@ first_page_containers = driver.find_elements(by="xpath", value="//ul[@id='states
 #/div[@class='detail-phones']/p firm's phone number xpath
 #/div/div[@class='col-sm-8 col-sm-pull-4 address-block']/p[@class='address-text'] firm's address xpath
 #/div/div[@class='col-sm-8 col-sm-pull-4 address-block']/a firm's website xpath
+#//div[@class='row']/div/p[@class='detail-description'] firm's description xpath on the third page BROKENPAGE
+#//section[@class='practice-areas-block']/ul/li firm's practice areas xpath on the third page BROKENPAGE
+#//div[@class='row']/div[@class='detail-phones']/p/ firm's phone number xpath on the third page BROKENPAGE
 
 for container in range(len(first_page_containers)):
     first_page_containers = driver.find_elements(by="xpath", value="//ul[@id='states-list']/li")
@@ -41,8 +44,6 @@ for container in range(len(first_page_containers)):
     states_names = a_tag.text.strip()
     if states_names not in target_states:
         continue
-    state_list.append(containers.find_element(by="xpath", value="./a").text)
-    state_list_links.append(containers.find_element(by="xpath", value="./a").get_attribute("href"))
     a_tag.click()
 
     second_page_containers = driver.find_elements(by="xpath", value="//div[@class='inner']")
@@ -70,11 +71,9 @@ for container in range(len(first_page_containers)):
     WebDriverWait(driver, 10).until(EC.presence_of_all_elements_located((By.XPATH, "//ul[@id='states-list']/li")))
 
 # Create a DataFrame with the extracted data
-df = pd.DataFrame({"State": state_list, "Link": state_list_links})
-df1 = pd.DataFrame({"Firm": firms_by_state_list, "Link": firms_by_state_list_links, "Description": firms_descriptions, "Phone": phone_numbers, "Address": addresses, "Website": websites})
+df = pd.DataFrame({"Firm": firms_by_state_list, "Link": firms_by_state_list_links, "Description": firms_descriptions, "Phone": phone_numbers, "Address": addresses, "Website": websites})
 
 # Save the DataFrame to a CSV file
-df.to_csv("D:/Git/US_Firms_Project/data/state_list.csv", index=False)
-df1.to_csv("D:/Git/US_Firms_Project/data/firms_by_state.csv", index=False)
+df.to_csv("D:/Git/US_Firms_Project/data/firms_list_1.csv", index=False)
 
 driver.quit()
