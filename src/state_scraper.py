@@ -70,22 +70,22 @@ for container in range(len(first_page_containers)):
             try:
                 #a_tag2 = container2.find_element(by="xpath", value="./div/div[@class='col-sm-8 col-sm-pull-4 address-block']/a")
                 phone_numbers.append(container2.find_element(by="xpath", value="./div[@class='detail-phones']/p").text)
-                #addresses.append(container2.find_element(by="xpath", value="./div/div[@class='col-sm-8 col-sm-pull-4 address-block']/p[@class='address-text']").text)
+                addresses.append(container2.find_element(by="xpath", value="./div/div[@class='col-sm-8 col-sm-pull-4 address-block']/p[@class='address-text']").text)
                 #websites.append(container2.find_element(by="xpath", value="./div/div[@class='col-sm-8 col-sm-pull-4 address-block']/a").get_attribute("href"))
-                #firm_descriptions.append(container2.find_element(by="xpath", value="./div/p[@class='detail-description']").text)
+                firm_descriptions.append(container2.find_element(by="xpath", value="./div/p[@class='detail-description']").text)
             except NoSuchElementException:
                 third_page_containers_broken = driver.find_elements(by="xpath", value="//div[@id='apus-main-content']")
                 try:
                     phone_numbers.append(container2.find_element(by="xpath", value="./section[@class='wrapper-main-page container inner']/div[@class='row']/div[@class='detail-phones']/p").text)
-                    #addresses.append(container2.find_element(by="xpath", value="./section[@class='wrapper-main-page container inner']/div[@class='row']/div[@id='main-content']/section[@class='firm-detail-block']/section[@class='firm-detail-content']/div[@class='col-sm-8 col-sm-pull-4 address-block']/p[@class='address-text']").text)
+                    addresses.append(container2.find_element(by="xpath", value="./section[@class='wrapper-main-page container inner']/div[@class='row']/div[@id='main-content']/section[@class='firm-detail-block']/section[@class='firm-detail-content']/div[@class='col-sm-8 col-sm-pull-4 address-block']/p[@class='address-text']").text)
                     #websites.append(container2.find_element(by="xpath", value="./div/div[@class='col-sm-8 col-sm-pull-4 address-block']/a").get_attribute("href"))
-                    #firm_descriptions.append(container2.find_element(by="xpath", value="./section[@class='wrapper-main-page container inner']/div[@class='row']/div/p[@class='detail-description']").text)
+                    firm_descriptions.append(container2.find_element(by="xpath", value="./section[@class='wrapper-main-page container inner']/div[@class='row']/div/p[@class='detail-description']").text)
                     #practice_areas.append(container2.find_element(by="xpath", value="./section[@class='practice-areas-block']/ul/li[@class='main-area']").text.strip())
                 except NoSuchElementException:
                     phone_numbers.append('N/A')
-                    #addresses.append('N/A')
+                    addresses.append('N/A')
                     #websites.append('N/A')
-                    #firm_descriptions.append('N/A')
+                    firm_descriptions.append('N/A')
                     #practice_areas.append('N/A')
 
         driver.back()
@@ -93,7 +93,7 @@ for container in range(len(first_page_containers)):
     WebDriverWait(driver, 10).until(EC.presence_of_all_elements_located((By.XPATH, "//ul[@id='states-list']/li")))
 
 # Create a DataFrame with the extracted datadf = pd.DataFrame({"Firm": firm_names, "Link": firm_links, "Description": firm_descriptions, "Phone": phone_numbers, "Address": addresses, "Website": websites, "Practice Areas": practice_areas})
-df = pd.DataFrame({"Phone": phone_numbers})
+df = pd.DataFrame({"Phone": phone_numbers, "Description": firm_descriptions, "Address": addresses})
 # Save the DataFrame to a CSV file
 df.to_csv("D:/Git/US_Firms_Project/data/firms_list_2.csv", index=False)
 
