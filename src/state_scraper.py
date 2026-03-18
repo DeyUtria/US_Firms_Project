@@ -21,14 +21,14 @@ firm_descriptions = []
 phone_numbers = []
 addresses = []
 websites = []
-#practice_areas = []
+practice_areas = []
 
 target_states = ['Alabama']
 
 first_page_containers = driver.find_elements(by="xpath", value="//ul[@id='states-list']/li")
 #second_page_containers = driver.find_elements(by="xpath", value="//div[@class='inner']")
 #third_page_containers = driver.find_elements(by="xpath", value="//section[@class='firm-detail-content']")
-#third_page_containers_broken = driver.find_elements(by="xpath", value="//div[@class='row']")
+#third_page_containers_broken = driver.find_elements(by="xpath", value="//div[@id='apus-main-content']")
                                 
 #2nd page xpaths
 #//div[@class='inner']/div[@class='job-title-wrapper']/h2/a.get_attribute("href") details button xpath
@@ -41,7 +41,7 @@ first_page_containers = driver.find_elements(by="xpath", value="//ul[@id='states
 #//div[@id='apus-main-content']/section[@class='practice-areas-block']/ul/li[@class='main-area'] firm's practice areas xpath "works on all layouts"
 
 #//div[@id='apus-main-content']/section[@class='wrapper-main-page container inner']/div[@class='row']/div[@class='detail-phones']/p firm's phone number xpath on the third page BROKENPAGE
-#///div[@id='apus-main-content']/section[@class='wrapper-main-page container inner']/div[@class='row']/div/p[@class='detail-description'] firm's description xpath on the third page BROKENPAGE
+#//div[@id='apus-main-content']/section[@class='wrapper-main-page container inner']/div[@class='row']/div/p[@class='detail-description'] firm's description xpath on the third page BROKENPAGE
 #//div[@id='apus-main-content']/section[@class='wrapper-main-page container inner']/div[@class='row']/div[@id='main-content']/section[@class='firm-detail-block']/section[@class='firm-detail-content']/div[@class='col-sm-8 col-sm-pull-4 address-block']/p[@class='address-text'] firm's address xpath on the third page BROKENPAGE
 #//div[@id='apus-main-content']/section[@class='practice-areas-block']/ul/li[@class='main-area'] firm's practice areas xpath on the third page BROKENPAGE
 
@@ -65,39 +65,35 @@ for container in range(len(first_page_containers)):
         a_tag1.click()
 
         third_page_containers = driver.find_elements(by="xpath", value="//section[@class='firm-detail-content']")
-        third_page_containers_broken = driver.find_elements(by="xpath", value="//div[@id='apus-main-content']")
-
+        
         for container2 in third_page_containers:
             try:
-                a_tag2 = container2.find_element(by="xpath", value="./div/div[@class='col-sm-8 col-sm-pull-4 address-block']/a")
+                #a_tag2 = container2.find_element(by="xpath", value="./div/div[@class='col-sm-8 col-sm-pull-4 address-block']/a")
                 phone_numbers.append(container2.find_element(by="xpath", value="./div[@class='detail-phones']/p").text)
-                addresses.append(container2.find_element(by="xpath", value="./div/div[@class='col-sm-8 col-sm-pull-4 address-block']/p[@class='address-text']").text)
-                websites.append(container2.find_element(by="xpath", value="./div/div[@class='col-sm-8 col-sm-pull-4 address-block']/a").get_attribute("href"))
-                firm_descriptions.append(container2.find_element(by="xpath", value="./div/p[@class='detail-description']").text)
-                practice_areas = container2.find_elements(by="xpath", value="./section[@class='practice-areas-block']/ul/li")
+                #addresses.append(container2.find_element(by="xpath", value="./div/div[@class='col-sm-8 col-sm-pull-4 address-block']/p[@class='address-text']").text)
+                #websites.append(container2.find_element(by="xpath", value="./div/div[@class='col-sm-8 col-sm-pull-4 address-block']/a").get_attribute("href"))
+                #firm_descriptions.append(container2.find_element(by="xpath", value="./div/p[@class='detail-description']").text)
             except NoSuchElementException:
-                a_tag2 = 'N/A'
-                phone_numbers.append('N/A')
-                addresses.append('N/A')
-                websites.append('N/A')
-                firm_descriptions.append('N/A')
+                third_page_containers_broken = driver.find_elements(by="xpath", value="//div[@id='apus-main-content']")
+                try:
+                    phone_numbers.append(container2.find_element(by="xpath", value="./section[@class='wrapper-main-page container inner']/div[@class='row']/div[@class='detail-phones']/p").text)
+                    #addresses.append(container2.find_element(by="xpath", value="./section[@class='wrapper-main-page container inner']/div[@class='row']/div[@id='main-content']/section[@class='firm-detail-block']/section[@class='firm-detail-content']/div[@class='col-sm-8 col-sm-pull-4 address-block']/p[@class='address-text']").text)
+                    #websites.append(container2.find_element(by="xpath", value="./div/div[@class='col-sm-8 col-sm-pull-4 address-block']/a").get_attribute("href"))
+                    #firm_descriptions.append(container2.find_element(by="xpath", value="./section[@class='wrapper-main-page container inner']/div[@class='row']/div/p[@class='detail-description']").text)
+                    #practice_areas.append(container2.find_element(by="xpath", value="./section[@class='practice-areas-block']/ul/li[@class='main-area']").text.strip())
+                except NoSuchElementException:
+                    phone_numbers.append('N/A')
+                    #addresses.append('N/A')
+                    #websites.append('N/A')
+                    #firm_descriptions.append('N/A')
+                    #practice_areas.append('N/A')
 
-        #for container3 in third_page_containers_broken:
-            #try:
-                #phone_numbers.append(container3.find_element(by="xpath", value="./div[@class='detail-phones']/p").text)
-                #addresses.append(container3.find_element(by="xpath", value="./div/div[@class='col-sm-8 col-sm-pull-4 address-block']/p[@class='address-text']").text)
-                #websites.append(container3.find_element(by="xpath", value="./div/div[@class='col-sm-8 col-sm-pull-4 address-block']/a").get_attribute("href"))
-            #except NoSuchElementException:
-                #phone_numbers.append('N/A')
-                #addresses.append('N/A')
-                #websites.append('N/A')
         driver.back()
     driver.back()
     WebDriverWait(driver, 10).until(EC.presence_of_all_elements_located((By.XPATH, "//ul[@id='states-list']/li")))
 
-# Create a DataFrame with the extracted data
-df = pd.DataFrame({"Firm": firm_names, "Link": firm_links, "Description": firm_descriptions, "Phone": phone_numbers, "Address": addresses, "Website": websites})
-
+# Create a DataFrame with the extracted datadf = pd.DataFrame({"Firm": firm_names, "Link": firm_links, "Description": firm_descriptions, "Phone": phone_numbers, "Address": addresses, "Website": websites, "Practice Areas": practice_areas})
+df = pd.DataFrame({"Phone": phone_numbers})
 # Save the DataFrame to a CSV file
 df.to_csv("D:/Git/US_Firms_Project/data/firms_list_2.csv", index=False)
 
