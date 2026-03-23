@@ -67,54 +67,49 @@ for container in range(len(first_page_containers)):
         firm_links.append(container1.find_element(by="xpath", value="./div[@class='job-title-wrapper']/h2/a").get_attribute("href"))
         a_tag1.click()
 
-        third_page_containers = driver.find_elements(by="xpath", value="//section[@class='firm-detail-content']")
+        third_page_main_layout = driver.find_elements(by="xpath", value="//section[@class='firm-detail-content']")
+        third_page_2nd_and_3rd_layout = driver.find_elements(by="xpath", value="//div[@id='apus-main-content']")
         practice_areas_containers = driver.find_elements(by="xpath", value="//div[@id='apus-main-content']/section[@class='wrapper-main-page container inner']/div[@class='row']/div[@id='main-content']")
-        third_page_containers_broken = driver.find_elements(by="xpath", value="//div[@id='apus-main-content']")
 
-        for container3 in practice_areas_containers:
+        for container2 in practice_areas_containers:
             try:
-                a_tag2 = container3.find_element(by="xpath", value="./div/div[@class='col-sm-8 col-sm-pull-4 address-block']/a")
-                items = container3.find_elements(by="xpath", value="./section[@class='practice-areas-block']/ul/li[@class='main-area']")
+                a_tag2 = container2.find_element(by="xpath", value="./div/div[@class='col-sm-8 col-sm-pull-4 address-block']/a")
+                items = container2.find_elements(by="xpath", value="./section[@class='practice-areas-block']/ul/li[@class='main-area']")
                 if len(items) > 0:
                     items_text = [item.text.strip() for item in items]
                     practice_areas.append(", ".join(items_text))
             except NoSuchElementException:
                 try:
-                    items = container3.find_elements(by="xpath", value="./section[@class='practice-areas-block']/ul/li[@class='main-area']")
+                    items = container2.find_elements(by="xpath", value="./section[@class='practice-areas-block']/ul/li[@class='main-area']")
                     if len(items) > 0:
                         items_text = [item.text.strip() for item in items]
                         practice_areas.append(", ".join(items_text))
                 except NoSuchElementException:
                     practice_areas.append('N/A')
 
-        for container2 in third_page_containers:
+        for container3 in third_page_main_layout:
             try:
-                a_tag2 = container2.find_element(by="xpath", value="./div/div[@class='col-sm-8 col-sm-pull-4 address-block']/a")
-                phone_numbers.append(container2.find_element(by="xpath", value="./div[@class='detail-phones']/p").text)
-                addresses.append(container2.find_element(by="xpath", value="./div/div[@class='col-sm-8 col-sm-pull-4 address-block']/p[@class='address-text']").text)
-                websites.append(container2.find_element(by="xpath", value="./div/div[@class='col-sm-8 col-sm-pull-4 address-block']/a").get_attribute("href"))
-                firm_descriptions.append(container2.find_element(by="xpath", value="./div/p[@class='detail-description']").text)
+                a_tag2 = container3.find_element(by="xpath", value="./div/div[@class='col-sm-8 col-sm-pull-4 address-block']/a")
+                phone_numbers.append(container3.find_element(by="xpath", value="./div[@class='detail-phones']/p").text)
+                addresses.append(container3.find_element(by="xpath", value="./div/div[@class='col-sm-8 col-sm-pull-4 address-block']/p[@class='address-text']").text)
+                websites.append(container3.find_element(by="xpath", value="./div/div[@class='col-sm-8 col-sm-pull-4 address-block']/a").get_attribute("href"))
+                firm_descriptions.append(container3.find_element(by="xpath", value="./div/p[@class='detail-description']").text)
             except NoSuchElementException:
-                third_page_containers_broken = driver.find_elements(by="xpath", value="//div[@id='apus-main-content']")
-                try:
-                    for container4 in third_page_containers_broken:
-                        try:
-                            phone_numbers.append(container4.find_element(by="xpath", value="./section[@class='wrapper-main-page container inner']/div[@class='row']/div[@class='detail-phones']/p").text)
-                        except NoSuchElementException:
-                            phone_numbers.append('N/A')
-                        try:
-                            addresses.append(container4.find_element(by="xpath", value="./section[@class='wrapper-main-page container inner']/div[@class='row']/div[@id='main-content']/section[@class='firm-detail-block']/section[@class='firm-detail-content']/div[@class='col-sm-8 col-sm-pull-4 address-block']/p[@class='address-text']").text)
-                        except NoSuchElementException:
-                            addresses.append('N/A')
-                        try:
-                            firm_descriptions.append(container4.find_element(by="xpath", value="./section[@class='wrapper-main-page container inner']/div[@class='row']/div/p[@class='detail-description']").text)
-                        except NoSuchElementException:
-                            firm_descriptions.append('N/A')
-                except NoSuchElementException:
-                    phone_numbers.append('N/A')
-                    addresses.append('N/A')
-                    firm_descriptions.append('N/A')
                 websites.append('N/A')
+                third_page_2nd_and_3rd_layout = driver.find_elements(by="xpath", value="//div[@id='apus-main-content']")
+                for container4 in third_page_2nd_and_3rd_layout:
+                    try:
+                        phone_numbers.append(container4.find_element(by="xpath", value="./section[@class='wrapper-main-page container inner']/div[@class='row']/div[@class='detail-phones']/p").text)
+                    except NoSuchElementException:
+                        phone_numbers.append('N/A')
+                    try:
+                        addresses.append(container4.find_element(by="xpath", value="./section[@class='wrapper-main-page container inner']/div[@class='row']/div[@id='main-content']/section[@class='firm-detail-block']/section[@class='firm-detail-content']/div[@class='col-sm-8 col-sm-pull-4 address-block']/p[@class='address-text']").text)
+                    except NoSuchElementException:
+                        addresses.append('N/A')
+                    try:
+                        firm_descriptions.append(container4.find_element(by="xpath", value="./section[@class='wrapper-main-page container inner']/div[@class='row']/div/p[@class='detail-description']").text)
+                    except NoSuchElementException:
+                        firm_descriptions.append('N/A')
 
         driver.back()
     driver.back()
