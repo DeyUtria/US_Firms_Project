@@ -29,6 +29,8 @@ addresses_1 = []
 firm_descriptions_broken = []
 phone_numbers_broken = []
 addresses_broken = []
+practice_areas_broken = []
+
 
 
 target_states = ['Alabama']
@@ -79,17 +81,23 @@ for container in range(len(first_page_containers)):
         for container2 in practice_areas_containers:
             try:
                 items = container2.find_elements(by="xpath", value="./section[@class='wrapper-main-page container inner']/div[@class='row']/div[@id='main-content']/section[@class='practice-areas-block']/ul/li[@class='main-area']")
-                if len(items) > 0:
+                a_tag2 = container2.find_element(by="xpath", value="./div/div[@class='col-sm-8 col-sm-pull-4 address-block']/a")
+                if len(items) and len(a_tag2) > 0:
                     items_text = [item.text.strip() for item in items]
                     practice_areas.append(", ".join(items_text))
             except NoSuchElementException:
-                try:
-                    items = container2.find_elements(by="xpath", value="./section[@class='practice-areas-block']/ul/li[@class='main-area']")
-                    if len(items) > 0:
-                        items_text = [item.text.strip() for item in items]
-                        practice_areas.append(", ".join(items_text))
-                except NoSuchElementException:
-                    practice_areas.append('N/A')
+                practice_areas.append('N/A')
+        
+        for container3 in practice_areas_containers:
+            try:
+                items_broken = container3.find_elements(by="xpath", value="./section[@class='practice-areas-block']/ul/li[@class='main-area']")
+                if len(items_broken) > 0:
+                    items_text = [item.text.strip() for item in items_broken]
+                    practice_areas_broken.append(", ".join(items_text))
+                else:
+                    practice_areas_broken.append('N/A')
+            except NoSuchElementException:
+                practice_areas_broken.append('N/A')
 
         for container2 in third_page_main_layout:
             try:
@@ -131,12 +139,14 @@ for container in range(len(first_page_containers)):
 df_main = pd.DataFrame({"Firm": firm_names, "Link": firm_links, "Description": firm_descriptions, "Phone": phone_numbers, "Address": addresses, "Website": websites})
 df_main_no_website = pd.DataFrame({"Firm": firm_names, "Link": firm_links, "Description": firm_descriptions_1, "Phone": phone_numbers_1, "Address": addresses_1})
 df_broken = pd.DataFrame({"Firm": firm_names, "Link": firm_links, "Description": firm_descriptions_broken, "Phone": phone_numbers_broken, "Address": addresses_broken})
-df_practice_areas = pd.DataFrame({"Practice Area": practice_areas})
+df_practice_areas = pd.DataFrame({"Firm": firm_names, "Link": firm_links, "Practice Area": practice_areas})
+df_practice_areas_broken = pd.DataFrame({"Practice Area": practice_areas_broken})
 
 # Save the DataFrame to a CSV file
 df_main.to_csv("D:/Git/US_Firms_Project/data/firms_list.csv", index=False)
 df_main_no_website.to_csv("D:/Git/US_Firms_Project/data/firms_list_no_website.csv", index=False)
 df_broken.to_csv("D:/Git/US_Firms_Project/data/firms_list_broken.csv", index=False)
 df_practice_areas.to_csv("D:/Git/US_Firms_Project/data/practice_areas.csv", index=False)
+df_practice_areas_broken.to_csv("D:/Git/US_Firms_Project/data/practice_areas_broken.csv", index=False)
 
 driver.quit()
