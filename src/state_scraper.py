@@ -1,51 +1,66 @@
+# Import all the needed libraries:
 from selenium import webdriver
 from selenium.webdriver.edge.service import Service
+from selenium.webdriver.edge.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import NoSuchElementException
 import pandas as pd
 
+# Set the driver path, website path and headless mode using msedge. Disabling GPU mode for Windows
 website = "https://www.us-barassociation.org/content/state-list/"
 path = "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedgedriver.exe"
 service = Service(executable_path=path)
-driver = webdriver.Edge(service=service)
+options = Options()
+options.add_argument("--headless=new")
+options.add_argument("--disable-gpu")
+driver = webdriver.Edge(service=service, options=options)
 driver.get(website)
 
+# Variables for the first and second pages (States list and firm names with their US Bar Association website link)
 state_list = []
 state_list_links = []
 firm_names = []
 firm_links = []
+
+# Variables for the third page (Firm's details webpage and all 3 different layouts)
+# First layout
 firm_descriptions = []
 phone_numbers = []
 addresses = []
 websites = []
 practice_areas = []
 
+# Second layout
 firm_descriptions_1 = []
 phone_numbers_1 = []
 addresses_1 = []
 
+# Third layout
 firm_descriptions_broken = []
 phone_numbers_broken = []
 addresses_broken = []
 practice_areas_broken = []
 
-target_states = ['Alabama']
+# Variable to select what states to scrape firms from
+target_states = ['Wyoming']
 
+# Defining the first page xpath and looping through it to get all the states list. Also, make sure to click on the state link to access the firm list from said state.
 first_page_containers = driver.find_elements(by="xpath", value="//ul[@id='states-list']/li")
 
 for container in range(len(first_page_containers)):
     first_page_containers = driver.find_elements(by="xpath", value="//ul[@id='states-list']/li")
     containers = first_page_containers[container]
-
     a_tag = containers.find_element(by="xpath", value="./a")
     
+    # Looping through the state we want to scrape the firm lists from. Striping the name for accuracy purposes.
     states_names = a_tag.text.strip()
     if states_names not in target_states:
         continue
     a_tag.click()
 
+    # Defining the second page xpath and looping through it to get all the firm names with their US Bar Association website link.
     second_page_containers = driver.find_elements(by="xpath", value="//div[@class='inner']")
 
     for container1 in second_page_containers:
@@ -54,10 +69,12 @@ for container in range(len(first_page_containers)):
         firm_links.append(container1.find_element(by="xpath", value="./div[@class='job-title-wrapper']/h2/a").get_attribute("href"))
         a_tag1.click()
 
+        # Defining the third page xpaths for all of the 3 different layouts found.
         third_page_main_layout = driver.find_elements(by="xpath", value="//section[@class='firm-detail-content']")
         third_page_broken_layout = driver.find_elements(by="xpath", value="//div[@id='apus-main-content']/section[@class='wrapper-main-page container inner']/div[@class='row']")
         practice_areas_containers = driver.find_elements(by="xpath", value="//div[@id='apus-main-content']")
 
+        # Looping through the practice areas blocks using the xpaths for the 2 different layouts and appending the information found to the respective lists.
         for container2 in practice_areas_containers:
             try:
                 items = container2.find_elements(by="xpath", value="./section[@class='wrapper-main-page container inner']/div[@class='row']/div[@id='main-content']/section[@class='practice-areas-block']/ul/li[@class='main-area']")
@@ -80,6 +97,7 @@ for container in range(len(first_page_containers)):
             except NoSuchElementException:
                 practice_areas_broken.append('N/A')
 
+        # Looping through the first layout and appending the information found to the respective lists. (Website button included)
         for container2 in third_page_main_layout:
             try:
                 a_tag2 = container2.find_element(by="xpath", value="./div/div[@class='col-sm-8 col-sm-pull-4 address-block']/a")
@@ -93,6 +111,7 @@ for container in range(len(first_page_containers)):
                 firm_descriptions.append('N/A')
                 websites.append('N/A')
 
+        # Looping through the second layout and appending the information found to the respective lists. (Website button missing) 
         for container3 in third_page_main_layout:
             try:
                 phone_numbers_1.append(container3.find_element(by="xpath", value="./div[@class='detail-phones']/p").text)
@@ -103,6 +122,7 @@ for container in range(len(first_page_containers)):
                 addresses_1.append('N/A')
                 firm_descriptions_1.append('N/A')
 
+        # Looping through the last layout and appending the information found to the respective lists. (Broken layout showing a 'PHP not found' error message)
         for container3 in third_page_broken_layout:
             try:
                 phone_numbers_broken.append(container3.find_element(by="xpath", value="./div[@class='detail-phones']/p").text)
@@ -112,8 +132,14 @@ for container in range(len(first_page_containers)):
                 phone_numbers_broken.append('N/A')
                 addresses_broken.append('N/A')
                 firm_descriptions_broken.append('N/A')
+
+        # Coming back to second page to access the next firm details page
         driver.back()
+
+    # Coming back to the first page to access the next state (if required in the 'target_states' variable)    
     driver.back()
+
+    #Telling the driver to wait 10 second until the condition is met which is wait for all the states in the list of the first page to show up.
     WebDriverWait(driver, 10).until(EC.presence_of_all_elements_located((By.XPATH, "//ul[@id='states-list']/li")))
 
 # Create a DataFrame with the extracted data
@@ -140,6 +166,7 @@ df_main_no_website.to_csv("D:/Git/US_Firms_Project/data/firms_list_no_website.cs
 # df_practice_areas.to_csv("D:/Git/US_Firms_Project/data/practice_areas.csv", index=False)
 # df_practice_areas_broken.to_csv("D:/Git/US_Firms_Project/data/practice_areas_broken.csv", index=False)
 
+# Quitting the program
 driver.quit()
 
 #second_page_containers = driver.find_elements(by="xpath", value="//div[@class='inner']")
