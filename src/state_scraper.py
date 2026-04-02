@@ -121,14 +121,24 @@ df_main = pd.DataFrame({"Firm": firm_names, "Link": firm_links, "Description": f
 df_main_no_website = pd.DataFrame({"Firm": firm_names, "Link": firm_links, "Description": firm_descriptions_1, "Phone": phone_numbers_1, "Address": addresses_1})
 df_broken = pd.DataFrame({"Firm": firm_names, "Link": firm_links, "Description": firm_descriptions_broken, "Phone": phone_numbers_broken, "Address": addresses_broken})
 df_practice_areas = pd.DataFrame({"Firm": firm_names, "Link": firm_links, "Practice Area": practice_areas})
-df_practice_areas_broken = pd.DataFrame({"Practice Area": practice_areas_broken})
+df_practice_areas_broken = pd.DataFrame({"Firm": firm_names, "Link": firm_links, "Practice Area": practice_areas_broken})
+
+# Merge all dataframes into one single dataframe with all the columns available
+df_main_no_website['Website'] = df_main['Website'].values
+df_main_no_website['Practice Area'] = df_practice_areas['Practice Area'].values
+df_broken['Website'] = 'N/A'
+df_broken['Practice Area'] = df_practice_areas_broken['Practice Area'].values
+df_main_no_website['Description'] = df_main_no_website['Description'].mask(df_main_no_website['Description'] == 'N/A', df_broken['Description'])
+df_main_no_website['Phone'] = df_main_no_website['Phone'].mask(df_main_no_website['Phone'] == 'N/A', df_broken['Phone'])
+df_main_no_website['Address'] = df_main_no_website['Address'].mask(df_main_no_website['Address'] == 'N/A', df_broken['Address'])
+df_main_no_website['Practice Area'] = df_main_no_website['Practice Area'].mask(df_main_no_website['Practice Area'] == 'N/A', df_broken['Practice Area'])
 
 # Save the DataFrame to a CSV file
-df_main.to_csv("D:/Git/US_Firms_Project/data/firms_list.csv", index=False)
+# df_main.to_csv("D:/Git/US_Firms_Project/data/firms_list.csv", index=False)
 df_main_no_website.to_csv("D:/Git/US_Firms_Project/data/firms_list_no_website.csv", index=False)
-df_broken.to_csv("D:/Git/US_Firms_Project/data/firms_list_broken.csv", index=False)
-df_practice_areas.to_csv("D:/Git/US_Firms_Project/data/practice_areas.csv", index=False)
-df_practice_areas_broken.to_csv("D:/Git/US_Firms_Project/data/practice_areas_broken.csv", index=False)
+# df_broken.to_csv("D:/Git/US_Firms_Project/data/firms_list_broken.csv", index=False)
+# df_practice_areas.to_csv("D:/Git/US_Firms_Project/data/practice_areas.csv", index=False)
+# df_practice_areas_broken.to_csv("D:/Git/US_Firms_Project/data/practice_areas_broken.csv", index=False)
 
 driver.quit()
 
