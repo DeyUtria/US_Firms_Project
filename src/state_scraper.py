@@ -31,29 +31,9 @@ phone_numbers_broken = []
 addresses_broken = []
 practice_areas_broken = []
 
-
-
 target_states = ['Alabama']
 
 first_page_containers = driver.find_elements(by="xpath", value="//ul[@id='states-list']/li")
-#second_page_containers = driver.find_elements(by="xpath", value="//div[@class='inner']")
-#third_page_containers = driver.find_elements(by="xpath", value="//section[@class='firm-detail-content']")
-#third_page_containers_broken = driver.find_elements(by="xpath", value="//div[@id='apus-main-content']")
-                                
-#2nd page xpaths
-#//div[@class='inner']/div[@class='job-title-wrapper']/h2/a.get_attribute("href") details button xpath
-
-#3rd page xpaths
-#//section[@class='firm-detail-content']/div[@class='detail-phones']/p firm's phone number xpath "works on both good layouts but not the broken one"
-#//section[@class='firm-detail-content']/div/p[@class='detail-description'] firm's description xpath "works on both good layouts but not the broken one"
-#//section[@class='firm-detail-content']/div/div[@class='col-sm-8 col-sm-pull-4 address-block']/p[@class='address-text'] firm's address xpath "works on both good layouts but not the broken one"
-#//section[@class='firm-detail-content']/div/div[@class='col-sm-8 col-sm-pull-4 address-block']/a firm's website xpath "works on first good layout but not the second good layout or the broken one"
-#//div[@id='apus-main-content']/section[@class='wrapper-main-page container inner']/div[@class='row']/div[@id='main-content']/section[@class='practice-areas-block']/ul/li[@class='main-area'] firm's practice areas xpath "works on both good layouts but not the broken one"
-
-#//div[@id='apus-main-content']/section[@class='wrapper-main-page container inner']/div[@class='row']/div[@class='detail-phones']/p firm's phone number xpath on the third page BROKENPAGE
-#//div[@id='apus-main-content']/section[@class='wrapper-main-page container inner']/div[@class='row']/div/p[@class='detail-description'] firm's description xpath on the third page BROKENPAGE
-#//div[@id='apus-main-content']/section[@class='wrapper-main-page container inner']/div[@class='row']/div[@id='main-content']/section[@class='firm-detail-block']/section[@class='firm-detail-content']/div[@class='col-sm-8 col-sm-pull-4 address-block']/p[@class='address-text'] firm's address xpath on the third page BROKENPAGE
-#//div[@id='apus-main-content']/section[@class='practice-areas-block']/ul/li[@class='main-area'] firm's practice areas xpath on the third page BROKENPAGE
 
 for container in range(len(first_page_containers)):
     first_page_containers = driver.find_elements(by="xpath", value="//ul[@id='states-list']/li")
@@ -81,10 +61,11 @@ for container in range(len(first_page_containers)):
         for container2 in practice_areas_containers:
             try:
                 items = container2.find_elements(by="xpath", value="./section[@class='wrapper-main-page container inner']/div[@class='row']/div[@id='main-content']/section[@class='practice-areas-block']/ul/li[@class='main-area']")
-                a_tag2 = container2.find_element(by="xpath", value="./div/div[@class='col-sm-8 col-sm-pull-4 address-block']/a")
-                if len(items) and len(a_tag2) > 0:
+                if len(items) > 0:
                     items_text = [item.text.strip() for item in items]
                     practice_areas.append(", ".join(items_text))
+                else:
+                    practice_areas.append('N/A')
             except NoSuchElementException:
                 practice_areas.append('N/A')
         
@@ -150,3 +131,22 @@ df_practice_areas.to_csv("D:/Git/US_Firms_Project/data/practice_areas.csv", inde
 df_practice_areas_broken.to_csv("D:/Git/US_Firms_Project/data/practice_areas_broken.csv", index=False)
 
 driver.quit()
+
+#second_page_containers = driver.find_elements(by="xpath", value="//div[@class='inner']")
+#third_page_containers = driver.find_elements(by="xpath", value="//section[@class='firm-detail-content']")
+#third_page_containers_broken = driver.find_elements(by="xpath", value="//div[@id='apus-main-content']")
+                                
+#2nd page xpaths
+#//div[@class='inner']/div[@class='job-title-wrapper']/h2/a.get_attribute("href") details button xpath
+
+#3rd page xpaths
+#//section[@class='firm-detail-content']/div[@class='detail-phones']/p firm's phone number xpath "works on both good layouts but not the broken one"
+#//section[@class='firm-detail-content']/div/p[@class='detail-description'] firm's description xpath "works on both good layouts but not the broken one"
+#//section[@class='firm-detail-content']/div/div[@class='col-sm-8 col-sm-pull-4 address-block']/p[@class='address-text'] firm's address xpath "works on both good layouts but not the broken one"
+#//section[@class='firm-detail-content']/div/div[@class='col-sm-8 col-sm-pull-4 address-block']/a firm's website xpath "works on first good layout but not the second good layout or the broken one"
+#//div[@id='apus-main-content']/section[@class='wrapper-main-page container inner']/div[@class='row']/div[@id='main-content']/section[@class='practice-areas-block']/ul/li[@class='main-area'] firm's practice areas xpath "works on both good layouts but not the broken one"
+
+#//div[@id='apus-main-content']/section[@class='wrapper-main-page container inner']/div[@class='row']/div[@class='detail-phones']/p firm's phone number xpath on the third page BROKENPAGE
+#//div[@id='apus-main-content']/section[@class='wrapper-main-page container inner']/div[@class='row']/div/p[@class='detail-description'] firm's description xpath on the third page BROKENPAGE
+#//div[@id='apus-main-content']/section[@class='wrapper-main-page container inner']/div[@class='row']/div[@id='main-content']/section[@class='firm-detail-block']/section[@class='firm-detail-content']/div[@class='col-sm-8 col-sm-pull-4 address-block']/p[@class='address-text'] firm's address xpath on the third page BROKENPAGE
+#//div[@id='apus-main-content']/section[@class='practice-areas-block']/ul/li[@class='main-area'] firm's practice areas xpath on the third page BROKENPAGE
