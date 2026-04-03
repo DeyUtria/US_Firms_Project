@@ -11,7 +11,7 @@ import os
 import sys
 import pandas as pd
 
-# Set the driver path, website path and headless mode using msedge. Disabling GPU mode for Windows. Adding path for executable file.
+# Set the driver path, website path and headless mode using msedge. Disabling GPU mode for Windows. Adding path for executable file and timeframe.
 website = "https://www.us-barassociation.org/content/state-list/"
 path = "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedgedriver.exe"
 service = Service(executable_path=path)
@@ -26,7 +26,6 @@ strf = now.strftime("%m%d%Y")
 
 # Variables for the first and second pages (States list and firm names with their US Bar Association website link)
 state_list = []
-state_list_links = []
 firm_names = []
 firm_links = []
 
@@ -50,20 +49,30 @@ addresses_broken = []
 practice_areas_broken = []
 
 # Variable to select what states to scrape firms from
-print("If choosing multiple states, separate each other using a comma. (e.g: Alabama, California)")
-target_states = input("What state(s) do you want the firm list from? ")
-
-# Defining the first page xpath and looping through it to get all the states list. Also, make sure to click on the state link to access the firm list from said state.
 first_page_containers = driver.find_elements(by="xpath", value="//ul[@id='states-list']/li")
+for contain in first_page_containers:
+    states = contain.find_element(by="xpath", value="./a")
+    state_list = states.text.strip()
 
+while True:
+    user_input = input("What state(s) do you want the firm list from? " + "\nIf choosing multiple states, separate each other using a comma. (e.g: Alabama, California): ")
+    if user_input in state_list:
+        target_states = [", ".join(user_input)]
+        print(target_states)
+        print("Retrieving the information... This may take a few minutes...")
+        break
+    else:
+        print("Invalid input. Please try again.")
+        
+# Defining the first page xpath and looping through it to get all the states list. Also, make sure to click on the state link to access the firm list from said state.
 for container in range(len(first_page_containers)):
     first_page_containers = driver.find_elements(by="xpath", value="//ul[@id='states-list']/li")
     containers = first_page_containers[container]
     a_tag = containers.find_element(by="xpath", value="./a")
     
-    # Looping through the state we want to scrape the firm lists from. Striping the name for accuracy purposes.
-    states_names = a_tag.text.strip()
-    if states_names not in target_states:
+    # Looping through the state we want to scrape the firm lists from. Stripping the name for accuracy purposes.
+    state_list = a_tag.text.strip()
+    if state_list not in target_states:
         continue
     a_tag.click()
 
