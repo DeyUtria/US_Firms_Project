@@ -26,6 +26,7 @@ strf = now.strftime("%m%d%Y")
 
 # Variables for the first and second pages (States list and firm names with their US Bar Association website link)
 state_list = []
+states_names = []
 firm_names = []
 firm_links = []
 
@@ -48,21 +49,32 @@ phone_numbers_broken = []
 addresses_broken = []
 practice_areas_broken = []
 
-# Variable to select what states to scrape firms from
+# Ask user what states to scrape firms from
 first_page_containers = driver.find_elements(by="xpath", value="//ul[@id='states-list']/li")
 for contain in first_page_containers:
-    states = contain.find_element(by="xpath", value="./a")
-    state_list = states.text.strip()
+    state_list.append(contain.find_element(by="xpath", value="./a").text.strip())
 
 while True:
     user_input = input("What state(s) do you want the firm list from? " + "\nIf choosing multiple states, separate each other using a comma. (e.g: Alabama, California): ")
-    if user_input in state_list:
-        target_states = [", ".join(user_input)]
-        print(target_states)
-        print("Retrieving the information... This may take a few minutes...")
+    
+    # Split the input by comma and strip whitespace from each state.
+    input_states = [state.strip() for state in user_input.split(",")]
+    
+    # Check if all input states are valid.
+    all_valid = True
+    for input in input_states:
+        if input not in state_list:
+            print(f"Invalid state: '{input}'. Please try again.")
+            all_valid = False
+            break
+    
+    if all_valid:
+        target_states = input_states
+        print(f"Selected states: {target_states}")
+        print("Retrieving the information and exporting to CSV file... This may take a few minutes...")
         break
     else:
-        print("Invalid input. Please try again.")
+        print("Please enter valid state name(s) separated by commas.")
         
 # Defining the first page xpath and looping through it to get all the states list. Also, make sure to click on the state link to access the firm list from said state.
 for container in range(len(first_page_containers)):
@@ -78,7 +90,7 @@ for container in range(len(first_page_containers)):
 
     # Defining the second page xpath and looping through it to get all the firm names with their US Bar Association website link.
     second_page_containers = driver.find_elements(by="xpath", value="//div[@class='inner']")
-
+    
     for container1 in second_page_containers:
         a_tag1 = container1.find_element(by="xpath", value="./div[@class='job-title-wrapper']/h2/a")
         firm_names.append(container1.find_element(by="xpath", value="./div[@class='job-title-wrapper']/h2/a").text)
@@ -88,11 +100,12 @@ for container in range(len(first_page_containers)):
         # Defining the third page xpaths for all of the 3 different layouts found.
         third_page_main_layout = driver.find_elements(by="xpath", value="//section[@class='firm-detail-content']")
         third_page_broken_layout = driver.find_elements(by="xpath", value="//div[@id='apus-main-content']/section[@class='wrapper-main-page container inner']/div[@class='row']")
-        practice_areas_containers = driver.find_elements(by="xpath", value="//div[@id='apus-main-content']")
+        practice_areas_containers = driver.find_elements(by="xpath", value="//div[@id='apus-main-content']")  
 
-        # Looping through the practice areas blocks using the xpaths for the 2 different layouts and appending the information found to the respective lists.
+        # Looping through the practice areas blocks and the title block using the xpaths for the 2 different layouts and appending the information found to the respective lists.
         for container2 in practice_areas_containers:
             try:
+                states_names.append(container2.find_element(by="xpath", value="./section[@id='apus-breadscrumb']/div[@class='container']/div[@class='wrapper-breads']/div[@class='wrapper-breads-inner']/div[@class='breadscrumb-inner flex-middle-sm']/h2").text)
                 items = container2.find_elements(by="xpath", value="./section[@class='wrapper-main-page container inner']/div[@class='row']/div[@id='main-content']/section[@class='practice-areas-block']/ul/li[@class='main-area']")
                 if len(items) > 0:
                     items_text = [item.text.strip() for item in items]
@@ -101,6 +114,7 @@ for container in range(len(first_page_containers)):
                     practice_areas.append('N/A')
             except NoSuchElementException:
                 practice_areas.append('N/A')
+                states_names.append('N/A')
         
         for container3 in practice_areas_containers:
             try:
@@ -164,6 +178,7 @@ df_main_no_website = pd.DataFrame({"Firm": firm_names, "Link": firm_links, "Desc
 df_broken = pd.DataFrame({"Firm": firm_names, "Link": firm_links, "Description": firm_descriptions_broken, "Phone": phone_numbers_broken, "Address": addresses_broken})
 df_practice_areas = pd.DataFrame({"Firm": firm_names, "Link": firm_links, "Practice Area": practice_areas})
 df_practice_areas_broken = pd.DataFrame({"Firm": firm_names, "Link": firm_links, "Practice Area": practice_areas_broken})
+df_states = pd.DataFrame({"State ": states_names})
 
 # Merge all dataframes into one single dataframe with all the columns available
 df_main_no_website['Website'] = df_main['Website'].values
@@ -177,10 +192,11 @@ df_main_no_website['Practice Area'] = df_main_no_website['Practice Area'].mask(d
 
 # Save the DataFrame to a CSV file
 # df_main.to_csv("D:/Git/US_Firms_Project/data/firms_list.csv", index=False)
-df_main_no_website.to_csv(f"D:/Git/US_Firms_Project/data/Firms-List-{strf}.csv", index=False)
+# df_main_no_website.to_csv(f"D:/Git/US_Firms_Project/data/Firms-List-{strf}.csv", index=False)
 # df_broken.to_csv("D:/Git/US_Firms_Project/data/firms_list_broken.csv", index=False)
 # df_practice_areas.to_csv("D:/Git/US_Firms_Project/data/practice_areas.csv", index=False)
 # df_practice_areas_broken.to_csv("D:/Git/US_Firms_Project/data/practice_areas_broken.csv", index=False)
+df_states.to_csv("D:/Git/US_Firms_Project/data/states.csv", index=False)
 print("!Program executed successfully!")
 # Quitting the program
 driver.quit()
