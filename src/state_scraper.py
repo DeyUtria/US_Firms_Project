@@ -18,7 +18,7 @@ service = Service(executable_path=path)
 options = Options()
 options.add_argument("--headless=new")
 options.add_argument("--disable-gpu")
-driver = webdriver.Edge(service=service, options=options)
+driver = webdriver.Edge(service=service)
 driver.get(website)
 app_path = os.path.dirname(sys.executable)
 now = datetime.now()
@@ -95,6 +95,7 @@ for container in range(len(first_page_containers)):
         a_tag1 = container1.find_element(by="xpath", value="./div[@class='job-title-wrapper']/h2/a")
         firm_names.append(container1.find_element(by="xpath", value="./div[@class='job-title-wrapper']/h2/a").text)
         firm_links.append(container1.find_element(by="xpath", value="./div[@class='job-title-wrapper']/h2/a").get_attribute("href"))
+        states_names.append(container1.find_element(by="xpath", value="./div[@class='job-metas']/div[@class='job-location']").text.strip().split(","))
         a_tag1.click()
 
         # Defining the third page xpaths for all of the 3 different layouts found.
@@ -105,7 +106,6 @@ for container in range(len(first_page_containers)):
         # Looping through the practice areas blocks and the title block using the xpaths for the 2 different layouts and appending the information found to the respective lists.
         for container2 in practice_areas_containers:
             try:
-                states_names.append(container2.find_element(by="xpath", value="./section[@id='apus-breadscrumb']/div[@class='container']/div[@class='wrapper-breads']/div[@class='wrapper-breads-inner']/div[@class='breadscrumb-inner flex-middle-sm']/h2").text)
                 items = container2.find_elements(by="xpath", value="./section[@class='wrapper-main-page container inner']/div[@class='row']/div[@id='main-content']/section[@class='practice-areas-block']/ul/li[@class='main-area']")
                 if len(items) > 0:
                     items_text = [item.text.strip() for item in items]
@@ -114,7 +114,6 @@ for container in range(len(first_page_containers)):
                     practice_areas.append('N/A')
             except NoSuchElementException:
                 practice_areas.append('N/A')
-                states_names.append('N/A')
         
         for container3 in practice_areas_containers:
             try:
@@ -178,9 +177,10 @@ df_main_no_website = pd.DataFrame({"Firm": firm_names, "Link": firm_links, "Desc
 df_broken = pd.DataFrame({"Firm": firm_names, "Link": firm_links, "Description": firm_descriptions_broken, "Phone": phone_numbers_broken, "Address": addresses_broken})
 df_practice_areas = pd.DataFrame({"Firm": firm_names, "Link": firm_links, "Practice Area": practice_areas})
 df_practice_areas_broken = pd.DataFrame({"Firm": firm_names, "Link": firm_links, "Practice Area": practice_areas_broken})
-df_states = pd.DataFrame({"State ": states_names})
+df_states = pd.DataFrame({"State": states_names})
 
 # Merge all dataframes into one single dataframe with all the columns available
+df_main_no_website['State'] = df_states['State'].str.get(1)
 df_main_no_website['Website'] = df_main['Website'].values
 df_main_no_website['Practice Area'] = df_practice_areas['Practice Area'].values
 df_broken['Website'] = 'N/A'
@@ -192,11 +192,11 @@ df_main_no_website['Practice Area'] = df_main_no_website['Practice Area'].mask(d
 
 # Save the DataFrame to a CSV file
 # df_main.to_csv("D:/Git/US_Firms_Project/data/firms_list.csv", index=False)
-# df_main_no_website.to_csv(f"D:/Git/US_Firms_Project/data/Firms-List-{strf}.csv", index=False)
+df_main_no_website.to_csv(f"D:/Git/US_Firms_Project/data/Firms-List-{strf}.csv", index=False)
 # df_broken.to_csv("D:/Git/US_Firms_Project/data/firms_list_broken.csv", index=False)
 # df_practice_areas.to_csv("D:/Git/US_Firms_Project/data/practice_areas.csv", index=False)
 # df_practice_areas_broken.to_csv("D:/Git/US_Firms_Project/data/practice_areas_broken.csv", index=False)
-df_states.to_csv("D:/Git/US_Firms_Project/data/states.csv", index=False)
+# df_states.to_csv("D:/Git/US_Firms_Project/data/states.csv", index=False)
 print("!Program executed successfully!")
 # Quitting the program
 driver.quit()
