@@ -18,7 +18,7 @@ service = Service(executable_path=path)
 options = Options()
 options.add_argument("--headless=new")
 options.add_argument("--disable-gpu")
-driver = webdriver.Edge(service=service)
+driver = webdriver.Edge(service=service, options=options)
 driver.get(website)
 app_path = os.path.dirname(sys.executable)
 now = datetime.now()
@@ -191,12 +191,12 @@ df_main_no_website['Address'] = df_main_no_website['Address'].mask(df_main_no_we
 df_main_no_website['Practice Area'] = df_main_no_website['Practice Area'].mask(df_main_no_website['Practice Area'] == 'N/A', df_broken['Practice Area'])
 
 # Save the DataFrame to a CSV file
-# df_main.to_csv("D:/Git/US_Firms_Project/data/firms_list.csv", index=False)
-df_main_no_website.to_csv(f"D:/Git/US_Firms_Project/data/Firms-List-{strf}.csv", index=False)
-# df_broken.to_csv("D:/Git/US_Firms_Project/data/firms_list_broken.csv", index=False)
-# df_practice_areas.to_csv("D:/Git/US_Firms_Project/data/practice_areas.csv", index=False)
-# df_practice_areas_broken.to_csv("D:/Git/US_Firms_Project/data/practice_areas_broken.csv", index=False)
-# df_states.to_csv("D:/Git/US_Firms_Project/data/states.csv", index=False)
+file_name = f"D:/Git/US_Firms_Project/data/Firms-List-{strf}.csv"
+final_path = os.path.join(app_path, file_name)
+
+df_main_no_website.to_csv(final_path, index=False)
+
 print("!Program executed successfully!")
+
 # Quitting the program
 driver.quit()
