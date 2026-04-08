@@ -84,7 +84,6 @@ USFirmsProject/
 │ └── scraper.py # (Your main script)
 │
 │── README.md
-│── requirements.txt
 `
 
 ---
