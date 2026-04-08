@@ -1,7 +1,8 @@
 # Import all the needed libraries:
 from selenium import webdriver
-from selenium.webdriver.edge.service import Service
-from selenium.webdriver.edge.options import Options
+from selenium.webdriver.chrome.service import Service
+from webdriver_manager.chrome import ChromeDriverManager
+from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -18,7 +19,7 @@ service = Service(executable_path=path)
 options = Options()
 options.add_argument("--headless=new")
 options.add_argument("--disable-gpu")
-driver = webdriver.Edge(service=service, options=options)
+driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
 driver.get(website)
 app_path = os.path.dirname(sys.executable)
 now = datetime.now()
