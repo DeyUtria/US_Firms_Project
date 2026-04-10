@@ -10,6 +10,7 @@ from selenium.common.exceptions import NoSuchElementException
 from datetime import datetime
 import os
 import sys
+import psycopg2
 import pandas as pd
 
 # Set the driver path, website path and headless mode using msedge. Disabling GPU mode for Windows. Adding path for executable file and timeframe.
@@ -191,13 +192,32 @@ df_main_no_website['Phone'] = df_main_no_website['Phone'].mask(df_main_no_websit
 df_main_no_website['Address'] = df_main_no_website['Address'].mask(df_main_no_website['Address'] == 'N/A', df_broken['Address'])
 df_main_no_website['Practice Area'] = df_main_no_website['Practice Area'].mask(df_main_no_website['Practice Area'] == 'N/A', df_broken['Practice Area'])
 
+tuples = list(df_main_no_website.itertuples(index=False, name=None))
+              
 # Save the DataFrame to a CSV file
 file_name = f"D:/Git/US_Firms_Project/data/Firms-List-{strf}.csv"
 final_path = os.path.join(app_path, file_name)
 
 df_main_no_website.to_csv(final_path, index=False)
 
-print("!Program executed successfully!")
+print(f"!CSV generated successfully! You can find it on the following path: {final_path}.")
 
+# Connecting to the database using postgresql and inserting the information extracted from usbar_association website
+print("Inserting information into the database...")
+
+conn = psycopg2.connect(
+    database = "postgres",
+    user = "postgres",
+    password = "admin",
+    host = "localhost",
+    port = "5432"
+)
+
+cursor = conn.cursor()
+cursor.executemany("INSERT INTO firms (firm, firm_link, description, phone_number, address, state_name, website, practice_area) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)", tuples)
+
+conn.commit()
+print("Information inserted successfully into the database!")
+conn.close()
 # Quitting the program
 driver.quit()
